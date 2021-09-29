@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="picker.css" media="screen"/>
+<title>Picker</title>
+</head>
+
+<body>
+<h1>It's Always Sunny In Philadelphia Episode Ranker</h1>
+
+<p>Select the best episodes in the show to rank them.
+    After being ranked they will appear on the right hand side.
+</p>
+
+<div id="container">
+
+<div id="picking">
+<ul id="evaluating" class="item-list">
+</ul>
+
+<p id="buttons"><button id="pick">Pick</button> <button id="pass">Pass</button> <button id="undo">Undo</button> <button id="redo">Redo</button></p>
+</div>
+
+<div id="secondary">
+<h2>Found favorites</h2>
+
+<ol id="favorites" class="item-list">
+</ol>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="picker.js"></script>
+<script src="picker-ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+<script>
+'use strict';
+
+var items = [
+    {id: 's1e1', class: 's1', name: 'The Gang Gets Racist'},
+    {id: 's1e2', class: 's1', name: 'Charlie Wants an Abortion'},
+    {id: 's1e3', class: 's1', name: 'Underage Drinking: A National Concern'},
+    {id: 's1e4', class: 's1', name: 'Charlie Has Cancer'},
+    {id: 's1e5', class: 's1', name: 'Gun Fever'},
+    {id: 's1e6', class: 's1', name: 'The Gang Finds a Dead Guy'},
+    {id: 's1e7', class: 's1', name: 'Charlie Got Molested'},
+    {id: 's2e1', class: 's2', name: 'Charlie Gets Crippled'},
+    {id: 's2e2', class: 's2', name: 'The Gang goes Jihad'},
+    {id: 's2e3', class: 's2', name: 'Dennis and Dee Go on Welfare'},
+    {id: 's2e4', class: 's2', name: 'Mac Bangs Dennis’ Mom'},
+    {id: 's2e5', class: 's2', name: 'Hundred Dollar Baby'},
+    {id: 's2e6', class: 's2', name: 'The Gang Gives Back'},
+    {id: 's2e7', class: 's2', name: 'The Gang Exploits a Miracle'},
+    {id: 's2e8', class: 's2', name: 'The Gang Runs for Office'},
+    {id: 's2e9', class: 's2', name: 'Charlie Goes America All Over Everybody’s Ass'},
+    {id: 's2e10', class: 's2', name: 'Dennis and Dee Get a New Dad'},
+    {id: 's3e1', class: 's3', name: 'The Gang Finds a Dumpster Baby'},
+    {id: 's3e2', class: 's3', name: 'The Gang Gets Invincible'},
+    {id: 's3e3', class: 's3', name: 'Dennis and Dee’s Mom is Dead'},
+    {id: 's3e4', class: 's3', name: 'The Gang Gets Held Hostage'},
+    {id: 's3e5', class: 's3', name: 'The Aluminum Monster vs. Fatty Magoo'},
+    {id: 's3e6', class: 's3', name: 'The Gang Solves the North Korea Situation'},
+    {id: 's3e7', class: 's3', name: 'The Gang Sells Out'},
+    {id: 's3e8', class: 's3', name: 'Frank Sets Sweet Dee on Fire'},
+    {id: 's3e9', class: 's3', name: 'Sweet Dee’s Dating a Retarded Person'},
+    {id: 's3e10', class: 's3', name: 'Mac is a Serial Killer'},
+    {id: 's3e11', class: 's3', name: 'Dennis Looks Like a Registered Sex Offender'},
+    {id: 's3e12', class: 's3', name: 'The Gang Gets Whacked (Part 1)'},
+    {id: 's3e13', class: 's3', name: 'The Gang Gets Whacked (Part 2)'},
+    {id: 's3e14', class: 's3', name: 'Bums: Making a Mess All Over the City'},
+    {id: 's3e15', class: 's3', name: 'The Gang Dances Their Asses Off'},
+    {id: 's4e1', class: 's4', name: 'Mac and Dennis: Manhunters'},
+    {id: 's4e2', class: 's4', name: 'The Gang Solves the Gas Crisis'},
+    {id: 's4e3', class: 's4', name: 'America’s Next Top Paddy’s Billboard Model Contest'},
+    {id: 's4e4', class: 's4', name: 'Mac’s Banging the Waitress'},
+    {id: 's4e5', class: 's4', name: 'Mac and Charlie Die (Part 1)'},
+    {id: 's4e6', class: 's4', name: 'Mac and Charlie Die (Part 2)'},
+    {id: 's4e7', class: 's4', name: 'Who Pooped the Bed?'},
+    {id: 's4e8', class: 's4', name: 'Paddy’s Pub: The Worst Bar in Philadelphia'},
+    {id: 's4e9', class: 's4', name: 'Dennis Reynolds: An Erotic Life'},
+    {id: 's4e10', class: 's4', name: 'Sweet Dee Has a Heart Attack'},
+    {id: 's4e11', class: 's4', name: 'The Gang Cracks the Liberty Bell'},
+    {id: 's4e12', class: 's4', name: 'The Gang Gets Extreme: Home Makeover Edition'},
+    {id: 's4e13', class: 's4', name: 'The Nightman Cometh'},
+    {id: 's5e1', class: 's5', name: 'The Gang Exploits the Mortgage Crisis’'},
+    {id: 's5e2', class: 's5', name: 'The Gang Hits the Road'},
+    {id: 's5e3', class: 's5', name: 'The Great Recession'},
+    {id: 's5e4', class: 's5', name: 'The Gang Gives Frank an Intervention'},
+    {id: 's5e5', class: 's5', name: 'The Waitress Is Getting Married'},
+    {id: 's5e6', class: 's5', name: 'The World Series Defense'},
+    {id: 's5e7', class: 's5', name: 'The Gang Wrestles for the Troops'},
+    {id: 's5e8', class: 's5', name: 'Paddy’s Pub: Home of the Original Kitten Mittens'},
+    {id: 's5e9', class: 's5', name: 'Mac and Dennis Break Up'},
+    {id: 's5e10', class: 's5', name: 'The D.E.N.N.I.S. System'},
+    {id: 's5e11', class: 's5', name: 'Mac and Charlie Write a Movie'},
+    {id: 's5e12', class: 's5', name: 'The Gang Reignites the Rivalry'},
+    {id: 's6e1', class: 's6', name: 'Mac Fights Gay Marriage'},
+    {id: 's6e2', class: 's6', name: 'Dennis Gets Divorced'},
+    {id: 's6e3', class: 's6', name: 'The Gang Buys a Boat'},
+    {id: 's6e4', class: 's6', name: 'Mac’s Big Break'},
+    {id: 's6e5', class: 's6', name: 'Mac and Charlie: White Trash'},
+    {id: 's6e6', class: 's6', name: 'Mac’s Mom Burns Her House Down'},
+    {id: 's6e7', class: 's6', name: 'Who Got Dee Pregnant?'},
+    {id: 's6e8', class: 's6', name: 'The Gang Gets a New Member'},
+    {id: 's6e9', class: 's6', name: 'Dee Reynolds: Shaping America’s Youth'},
+    {id: 's6e10', class: 's6', name: 'Charlie Kelly: King of the Rats'},
+    {id: 's6e11', class: 's6', name: 'The Gang Gets Stranded in the Woods'},
+    {id: 's6e12', class: 's6', name: 'Dee Gives Birth'},
+    {id: 's6e13', class: 's6', name: 'A Very Sunny Christmas'},
+    {id: 's7e1', class: 's7', name: 'Frank’s Pretty Woman'},
+    {id: 's7e2', class: 's7', name: 'The Gang Goes to the Jersey Shore'},
+    {id: 's7e3', class: 's7', name: 'Frank Reynolds’ Little Beauties'},
+    {id: 's7e4', class: 's7', name: 'Sweet Dee Gets Audited'},
+    {id: 's7e5', class: 's7', name: 'Frank’s Brother'},
+    {id: 's7e6', class: 's7', name: 'The Storm of the Century'},
+    {id: 's7e7', class: 's7', name: 'Chardee MacDennis: The Game of Games'},
+    {id: 's7e8', class: 's7', name: 'The ANTI-Social Network'},
+    {id: 's7e9', class: 's7', name: 'The Gang Gets Trapped'},
+    {id: 's7e10', class: 's7', name: 'How Mac Got Fat'},
+    {id: 's7e11', class: 's7', name: 'Thunder Gun Express'},
+    {id: 's7e12', class: 's7', name: 'The High School Reunion'},
+    {id: 's7e13', class: 's7', name: 'The High School Reunion Part 2: The Gang’s Revenge'},
+    {id: 's8e1', class: 's8', name: 'Pop-Pop: The Final Solution'},
+    {id: 's8e2', class: 's8', name: 'The Gang Recycles Their Trash'},
+    {id: 's8e3', class: 's8', name: 'The Maureen Ponderosa Wedding Massacre'},
+    {id: 's8e4', class: 's8', name: 'Charlie and Dee Find Love'},
+    {id: 's8e5', class: 's8', name: 'The Gang Gets Analyzed'},
+    {id: 's8e6', class: 's8', name: 'Charlie’s Mom Has Cancer'},
+    {id: 's8e7', class: 's8', name: 'Frank’s Back in Business'},
+    {id: 's8e8', class: 's8', name: 'Charlie Rules the World'},
+    {id: 's8e9', class: 's8', name: 'The Gang Dines Out'},
+    {id: 's8e10', class: 's8', name: 'Reynolds vs. Reynolds: The Cereal Defense'},
+    {id: 's9e1', class: 's9', name: 'The Gang Broke Dee'},
+    {id: 's9e2', class: 's9', name: 'Gun Fever Too: Still Hot'},
+    {id: 's9e3', class: 's9', name: 'The Gang Tries Desperately to Win an Award'},
+    {id: 's9e4', class: 's9', name: 'Mac and Dennis Buy a Timeshare'},
+    {id: 's9e5', class: 's9', name: 'Mac Day'},
+    {id: 's9e6', class: 's9', name: 'The Gang Saves the Day'},
+    {id: 's9e7', class: 's9', name: 'The Gang Gets Quarantined'},
+    {id: 's9e8', class: 's9', name: 'Flowers for Charlie'},
+    {id: 's9e9', class: 's9', name: 'The Gang Makes Lethal Weapon 6'},
+    {id: 's9e10', class: 's9', name: 'The Gang Squashes Their Beefs'},
+    {id: 's10e1', class: 's10', name: 'The Gang Beats Boggs'},
+    {id: 's10e2', class: 's10', name: 'The Gang Group Dates'},
+    {id: 's10e3', class: 's10', name: 'Psycho Pete Returns'},
+    {id: 's10e4', class: 's10', name: 'Charlie Work'},
+    {id: 's10e5', class: 's10', name: 'The Gang Spies Like U.S.'},
+    {id: 's10e6', class: 's10', name: 'The Gang Misses the Boat'},
+    {id: 's10e7', class: 's10', name: 'Mac Kills His Dad'},
+    {id: 's10e8', class: 's10', name: 'The Gang Goes on Family Fight'},
+    {id: 's10e9', class: 's10', name: 'Frank Retires'},
+    {id: 's10e10', class: 's10', name: 'Ass Kickers United: Mac and Charlie Join a Cult'},
+    {id: 's11e1', class: 's11', name: 'Chardee MacDennis 2: Electric Boogaloo'},
+    {id: 's11e2', class: 's11', name: 'Frank Falls Out the Window'},
+    {id: 's11e3', class: 's11', name: 'The Gang Hits the Slopes'},
+    {id: 's11e4', class: 's11', name: 'Dee Made a Smut Film'},
+    {id: 's11e5', class: 's11', name: 'Mac & Dennis Move to the Suburbs'},
+    {id: 's11e6', class: 's11', name: 'Being Frank'},
+    {id: 's11e7', class: 's11', name: 'McPoyle vs. Ponderosa: The Trial of the Century'},
+    {id: 's11e8', class: 's11', name: 'Charlie Catches a Leprechaun'},
+    {id: 's11e9', class: 's11', name: 'The Gang Goes to Hell'},
+    {id: 's11e10', class: 's11', name: 'The Gang Goes to Hell: Part Two'},
+    {id: 's12e1', class: 's12', name: 'The Gang Turns Black'},
+    {id: 's12e2', class: 's12', name: 'The Gang Goes to a Water Park'},
+    {id: 's12e3', class: 's12', name: 'Old Lady House: A Situation Comedy'},
+    {id: 's12e4', class: 's12', name: 'Wolf Cola: A Public Relations Nightmare'},
+    {id: 's12e5', class: 's12', name: 'Making Dennis Reynolds a Murderer'},
+    {id: 's12e6', class: 's12', name: 'Hero or Hate Crime?'},
+    {id: 's12e7', class: 's12', name: 'PTSDee'},
+    {id: 's12e8', class: 's12', name: 'The Gang Tends Bar'},
+    {id: 's12e9', class: 's12', name: 'A Cricket’s Tale'},
+    {id: 's12e10', class: 's12', name: 'Dennis’ Double Life'},
+    {id: 's13e1', class: 's13', name: 'The Gang Makes Paddy’s Great Again'},
+    {id: 's13e2', class: 's13', name: 'The Gang Escapes'},
+    {id: 's13e3', class: 's13', name: 'The Gang Beats Boggs: Ladies’ Reboot'},
+    {id: 's13e4', class: 's13', name: 'Time’s Up for the Gang'},
+    {id: 's13e5', class: 's13', name: 'The Gang Gets New Wheels'},
+    {id: 's13e6', class: 's13', name: 'The Gang Solves the Bathroom Problem'},
+    {id: 's13e7', class: 's13', name: 'The Gang Does a Clip Show'},
+    {id: 's13e8', class: 's13', name: 'Charlie’s Home Alone'},
+    {id: 's13e9', class: 's13', name: 'The Gang Wins the Big Game'},
+    {id: 's13e10', class: 's13', name: 'Mac Finds His Pride'},
+    {id: 's14e1', class: 's14', name: 'The Gang Gets Romantic'},
+    {id: 's14e2', class: 's14', name: 'Thunder Gun 4: Maximum Cool'},
+    {id: 's14e3', class: 's14', name: 'Dee Day'},
+    {id: 's14e4', class: 's14', name: 'The Gang Chokes'},
+    {id: 's14e5', class: 's14', name: 'The Gang Texts'},
+    {id: 's14e6', class: 's14', name: 'The Janitor Always Mops Twice'},
+    {id: 's14e7', class: 's14', name: 'The Gang Solves Global Warming'},
+    {id: 's14e8', class: 's14', name: 'Paddy’s Has a Jumper'},
+    {id: 's14e9', class: 's14', name: 'A Woman’s Right to Chop'},
+    {id: 's14e10', class: 's14', name: 'Waiting for Big Mo'},
+];
+
+var myPicker = new picker.Picker({
+    items: items
+});
+
+var pickerUI = new PickerUI(myPicker, {
+    elements: {
+        pick: "#pick",
+        pass: "#pass",
+        undo: "#undo",
+        redo: "#redo",
+        evaluating: "#evaluating",
+        favorites: "#favorites"
+    }
+});
+
+pickerUI.initialize();
+
+/* Sortable favorites - you can safely remove this, and the Sortable.min.js script, if you don't want to be able to sort your favorite list. */
+var sortable = new Sortable(pickerUI.elem.favorites.get(0), {
+    draggable: '.item',
+    animation: 100,
+    onStart: function() {
+        pickerUI.elem.favorites.addClass("sorting");
+    },
+    onEnd: function() {
+        pickerUI.elem.favorites.removeClass("sorting");
+    },
+    onUpdate: function() {
+        myPicker.setFavorites(pickerUI.elem.favorites.children().map(function() {
+            return pickerUI.getItem(this);
+        }).get());
+        pickerUI.update(true);
+    }
+});
+/* End sortable favorites */
+</script>
+</body>
+</html>
